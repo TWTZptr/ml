@@ -1,13 +1,17 @@
 package main
 
 import (
-	"fmt"
 	"image"
 	_ "image/png"
 	"os"
 )
 
-func getFilesPaths(path string) []string {
+type TrainImages struct {
+	sharps  []string
+	dollars []string
+}
+
+func getFilePaths(path string) []string {
 	entries, _ := os.ReadDir(path)
 	res := make([]string, len(entries))
 	for i, value := range entries {
@@ -18,19 +22,36 @@ func getFilesPaths(path string) []string {
 }
 
 func GetTestImagesPaths() []string {
-	return getFilesPaths("images/test")
+	return getFilePaths("images/test")
 }
 
-func GetTrainImagesPaths() []string {
-	return getFilesPaths("images/train")
+func GetTrainImagesPaths() TrainImages {
+	return TrainImages{dollars: getFilePaths("images/train/dollar"), sharps: getFilePaths("images/train/sharp")}
 }
 
-func ConvertImageToMatrix(file *os.File) {
-	imageData, imageType, err := image.Decode(file)
+func ConvertImageToMatrix(file *os.File) [ImageSideSize][ImageSideSize]int8 {
+	imageData, _, err := image.Decode(file)
 
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println(imageType, imageData)
+	stepX, stepY := float64(imageData.Bounds().Max.X)/ImageSideSize, float64(imageData.Bounds().Max.Y)/ImageSideSize
+
+	result := [ImageSideSize][ImageSideSize]int8{}
+
+	for i := 0.0; i < ImageSideSize; i++ {
+		for j := 0.0; j < ImageSideSize; j++ {
+			pixel := imageData.At(int(i*stepX), int(j*stepY))
+			_, r, g, b := pixel.RGBA()
+			sum := r + g + b
+			if sum < ColorThreshold {
+				result[int(i)][int(j)] = 1
+			} else {
+				result[int(i)][int(j)] = 0
+			}
+		}
+	}
+
+	return result
 }
