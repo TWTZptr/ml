@@ -21,7 +21,7 @@ func NewNeuron() Neuron {
 	return neuron
 }
 
-func (n Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int {
+func (n Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int8 {
 	sum := 0.0
 	for i := 0; i < ImageSideSize; i++ {
 		for j := 0; j < ImageSideSize; j++ {
@@ -47,11 +47,11 @@ func (n Neuron) Save() {
 	}
 }
 
-func (n Neuron) Load() {
+func (n Neuron) Load() bool {
 	f, err := os.Open(WeightsFilename)
 
 	if err != nil {
-		panic(err)
+		return false
 	}
 
 	defer func() {
@@ -62,11 +62,13 @@ func (n Neuron) Load() {
 	}()
 
 	if err := binary.Read(f, binary.LittleEndian, &n.weights); err != nil {
-		panic(err)
+		return false
 	}
+
+	return true
 }
 
-func activate(value float64) int {
+func activate(value float64) int8 {
 	if value > 0.0 {
 		return 1
 	} else {
