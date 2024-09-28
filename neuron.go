@@ -1,7 +1,7 @@
 package main
 
 import (
-	bytes2 "bytes"
+	"bytes"
 	"encoding/binary"
 	"math/rand"
 	"os"
@@ -21,7 +21,7 @@ func NewNeuron() Neuron {
 	return neuron
 }
 
-func (n Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int8 {
+func (n *Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int8 {
 	sum := 0.0
 	for i := 0; i < ImageSideSize; i++ {
 		for j := 0; j < ImageSideSize; j++ {
@@ -36,18 +36,18 @@ func (n Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int8 {
 	return activate(sum)
 }
 
-func (n Neuron) Save() {
-	var bytes bytes2.Buffer
-	if err := binary.Write(&bytes, binary.BigEndian, n.weights); err != nil {
+func (n *Neuron) Save() {
+	var buf bytes.Buffer
+	if err := binary.Write(&buf, binary.LittleEndian, &n.weights); err != nil {
 		panic(err)
 	}
 
-	if err := os.WriteFile(WeightsFilename, bytes.Bytes(), 0666); err != nil {
+	if err := os.WriteFile(WeightsFilename, buf.Bytes(), 0666); err != nil {
 		panic(err)
 	}
 }
 
-func (n Neuron) Load() bool {
+func (n *Neuron) Load() bool {
 	f, err := os.Open(WeightsFilename)
 
 	if err != nil {

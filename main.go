@@ -23,9 +23,9 @@ func run(neuron *Neuron) {
 		result := predict(neuron, path)
 
 		if result == SharpValue {
-			fmt.Printf("%s is Sharp\n", path)
+			fmt.Printf("%s is a Sharp\n", path)
 		} else {
-			fmt.Printf("%s is Dollar\n", path)
+			fmt.Printf("%s is a Dollar\n", path)
 		}
 	}
 }
