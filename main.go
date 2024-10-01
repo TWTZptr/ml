@@ -70,9 +70,10 @@ func trainWithImage(neuron *Neuron, filepath string, expectedResult int8) {
 
 		delta := expectedResult - result
 
-		for i := 0; i < len(neuron.weights); i++ {
+		for i := 0; i < len(neuron.weights)-1; i++ {
 			neuron.weights[i] += LearningSpeed * float64(delta) * float64(imageMatrix[i/ImageSideSize][i%ImageSideSize])
 		}
+		neuron.weights[len(neuron.weights)-1] += LearningSpeed * float64(delta)
 	} else {
 		fmt.Printf("Predicted: %s\n", filepath)
 	}

@@ -22,7 +22,7 @@ func NewNeuron() Neuron {
 }
 
 func (n *Neuron) Consume(matrix [ImageSideSize][ImageSideSize]int8) int8 {
-	sum := 0.0
+	sum := 1.0 * n.weights[NeuronsQuantity-1]
 	for i := 0; i < ImageSideSize; i++ {
 		for j := 0; j < ImageSideSize; j++ {
 			isBlack := matrix[i][j]
